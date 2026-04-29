@@ -6,3 +6,4 @@ __pycache__/
 data/extracted_frames/
 data/processed_faces/
 data/embeddings/
+data/
