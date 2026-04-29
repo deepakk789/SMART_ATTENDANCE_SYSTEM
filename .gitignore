@@ -3,6 +3,5 @@ __pycache__/
 *.pyc
 *.pkl
 *.log
-data/extracted_frames/
-data/processed_faces/
-data/embeddings/
+data/
+attendance_records/
