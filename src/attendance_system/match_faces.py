@@ -8,28 +8,39 @@ def load_database(db_path):
     return database
 
 
-def euclidean_distance(a, b):
-    return np.linalg.norm(a - b)
-
-
 def match_faces(embeddings, database, threshold=0.6):
     identified = []
+    
+    # Check if database is empty to prevent errors
+    if not database:
+        return ["Unknown"] * len(embeddings)
 
+    # 1. Flatten the database for vectorization
+    # We do this to take advantage of Numpy's C-level optimizations
+    db_labels = []
+    db_matrix = []
+    
+    for person, db_embeds in database.items():
+        for db_emb in db_embeds:
+            db_labels.append(person)
+            db_matrix.append(db_emb)
+            
+    db_matrix = np.array(db_matrix)
+    db_labels = np.array(db_labels)
+
+    # 2. Vectorized matching
     for emb in embeddings:
-        name = "Unknown"
-        min_dist = float("inf")
-
-        for person, db_embeds in database.items():
-            for db_emb in db_embeds:
-                dist = euclidean_distance(emb, db_emb)
-
-                if dist < min_dist:
-                    min_dist = dist
-                    name = person
-
-        if min_dist > threshold:
-            name = "Unknown"
-
-        identified.append(name)
+        # Calculate Euclidean distance against ALL database embeddings simultaneously
+        distances = np.linalg.norm(db_matrix - emb, axis=1)
+        
+        # Find the index of the minimum distance
+        min_idx = np.argmin(distances)
+        min_dist = distances[min_idx]
+        
+        # Check if the closest match is within our confidence threshold
+        if min_dist < threshold:
+            identified.append(db_labels[min_idx])
+        else:
+            identified.append("Unknown")
 
     return identified
