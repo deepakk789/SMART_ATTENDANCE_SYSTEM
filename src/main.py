@@ -16,12 +16,19 @@ from attendance_system.draw_results import draw_results
 
 import cv2
 
+# ---------------- PATH RESOLUTION ----------------
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # ---------------- CONFIG ----------------
-RAW_VIDEO_DIR = "data/raw_videos"
-FRAMES_DIR = "data/extracted_frames"
-FACES_DIR = "data/processed_faces"
-EMBEDDINGS_DIR = "data/embeddings"
-GROUP_IMAGE_DIR = "data/group_images"
+RAW_VIDEO_DIR = os.path.join(BASE_DIR, "data", "raw_videos")
+FRAMES_DIR = os.path.join(BASE_DIR, "data", "extracted_frames")
+FACES_DIR = os.path.join(BASE_DIR, "data", "processed_faces")
+EMBEDDINGS_DIR = os.path.join(BASE_DIR, "data", "embeddings")
+GROUP_IMAGE_DIR = os.path.join(BASE_DIR, "data", "group_images")
+
+# Ensure directories exist
+for directory in [RAW_VIDEO_DIR, FRAMES_DIR, FACES_DIR, EMBEDDINGS_DIR, GROUP_IMAGE_DIR]:
+    os.makedirs(directory, exist_ok=True)
 
 # ---------------- PHASE 1 ----------------
 def create_dataset():
@@ -66,15 +73,15 @@ def run_attendance(image_path):
     # Step 4: Match Faces
     names = match_faces(embeddings, database)
 
-    # Step 5: Mark Attendance
-    mark_attendance(names)
+    # Step 5 is removed here to prevent duplicate attendance marking
+    # Attendance is now only marked once at the end of all processing.
 
     # Step 6: Draw Results
     result_image = draw_results(image, boxes, names)
 
     # Show result
     cv2.imshow("Attendance System", result_image)
-    cv2.waitKey(0)
+    cv2.waitKey(3000) # Window will close automatically after 3 seconds
     cv2.destroyAllWindows()
 
     print("\n[INFO] Attendance Completed!\n")
@@ -83,7 +90,7 @@ def run_attendance(image_path):
 
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
-    print("===== SMART ATTENDANCE SYSTEM =====")
+    print("SMART ATTENDANCE SYSTEM")
 
     print("\n1. Create Dataset")
     print("2. Run Attendance")
@@ -100,20 +107,20 @@ if __name__ == "__main__":
         if len(images) == 0:
             print("[ERROR] No group images found!")
         else:
-            all_names = []
+            detected_students = {}
 
             for img in images:
                 image_path = os.path.join(GROUP_IMAGE_DIR, img)
                 print(f"\n[INFO] Processing {img}...")
         
                 names = run_attendance(image_path)  # modify function to return names
-                all_names.extend(names)
-
-            # Remove duplicates & unknown
-            unique_names = set([name for name in all_names if name != "Unknown"])
+                
+                for name in names:
+                    if name != "Unknown" and name not in detected_students:
+                        detected_students[name] = img
 
             from attendance_system.mark_attendance import mark_attendance
-            mark_attendance(list(unique_names))
+            mark_attendance(detected_students)
 
     else:
         print("Invalid choice!")

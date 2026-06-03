@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartAttend — AI Attendance System</title>
+  <meta name="description" content="AI-powered face recognition attendance system for colleges. Teachers manage classrooms, students track their attendance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <a class="nav-logo" href="#/" onclick="navigate('/')">
+      <span class="logo-icon">⬡</span>
+      SmartAttend
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#/" onclick="navigate('/')" class="nav-link">Home</a>
+      <a href="#/demo" onclick="navigate('/demo')" class="nav-link">Live Demo</a>
+    </div>
+    <div class="nav-auth" id="nav-auth">
+      <button class="btn btn-ghost" onclick="navigate('/login')">Login</button>
+      <button class="btn btn-primary" onclick="navigate('/register')">Get Started</button>
+    </div>
+    <div class="nav-user hidden" id="nav-user">
+      <span class="user-pill" id="user-pill"></span>
+      <button class="btn btn-ghost" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main app container — all views render here -->
+  <main id="app"></main>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay hidden" id="loading-overlay">
+    <div class="spinner"></div>
+    <p id="loading-text">Processing…</p>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
