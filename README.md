@@ -66,12 +66,15 @@ Group Photo  ->  Face Detection (MTCNN)  ->  Face Alignment (160x160)
 
 ## Project Structure
 
+> **Note:** Large binary files (model weights, embeddings, raw data, attendance records, logs) are excluded from version control via `.gitignore`. Only source code and configuration are tracked.
+
 ```
 SMART_ATTENDENCE_SYSTEM/
 |
 |-- src/
 |   |-- main.py                        # Orchestrates Phase 1 and Phase 2
 |   |-- dataset_creation/
+|   |   |-- __init__.py
 |   |   |-- extract_frames.py          # Video to frames at 2 FPS
 |   |   |-- detect_faces.py            # MTCNN face detection and crop
 |   |   |-- align_faces.py             # Face alignment and resize
@@ -79,31 +82,33 @@ SMART_ATTENDENCE_SYSTEM/
 |   |   |-- build_database.py          # Builds and saves the .pkl database
 |   |
 |   |-- attendance_system/
+|   |   |-- __init__.py
 |   |   |-- detect_faces.py            # MTCNN detection on group photo
 |   |   |-- generate_embeddings.py     # Embedding per detected face
 |   |   |-- match_faces.py             # Euclidean nearest-neighbour matching
 |   |   |-- mark_attendance.py         # Writes attendance CSV with timestamp
 |   |   |-- draw_results.py            # Annotates output image with results
 |   |
-|   |-- utils/
+|   |-- utils/                         # Shared utility helpers
 |
-|-- data/
-|   |-- raw_videos/                    # Input: one folder per student, videos inside
-|   |-- extracted_frames/              # Auto-generated: frames per student
-|   |-- processed_faces/               # Auto-generated: aligned face crops
-|   |-- embeddings/                    # embeddings.pkl + labels.pkl
-|   |-- group_images/                  # Input: classroom photos for recognition
-|
-|-- models/
-|   |-- facenet_model/                 # FaceNet weights (downloaded at runtime)
-|   |-- mtcnn_model/                   # MTCNN weights (downloaded at runtime)
-|
-|-- attendance_records/                # Output: timestamped attendance CSV files
-|-- logs/
 |-- notebooks/
+|   |-- testing_pipeline.ipynb         # End-to-end pipeline testing
+|   |-- visualization.ipynb            # Embedding and result visualisation
+|
 |-- config/
-|-- requirements.txt
+|   |-- config.yaml                    # Thresholds, paths, and pipeline settings
+|
+|-- paper/
+|   |-- figures/                       # Architecture diagrams and result figures
+|
+|-- requirements.txt                   # Python dependencies
+|-- .gitignore
+|-- README.md
+|-- TECHNICAL_DOCUMENTATION.md
 ```
+
+> Directories that are **auto-generated at runtime** and therefore not in the repo:
+> `data/`, `models/`, `attendance_records/`, `logs/`
 
 ---
 
