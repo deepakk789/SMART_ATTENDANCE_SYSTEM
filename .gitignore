@@ -1,7 +1,88 @@
+# Web App (excluded, separate concern)
+webapp/
+
+# Python Environment
 venv/
+.venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*.ipynb
+
+# Generated Model Weights (downloaded at runtime)
+models/facenet_model/
+models/mtcnn_model/
+*.h5
+*.pb
+*.onnx
+*.tflite
+*.pt
+*.pth
+
+# Serialised Data / Embeddings
 *.pkl
-*.log
-data/
+*.npy
+*.npz
+
+# Raw Training Data (large, not version-controlled)
+data/raw_videos/
+data/extracted_frames/
+data/processed_faces/
+data/group_images/
+data/draft_group_images/
+data/embeddings/
+
+# Attendance Records and Logs
 attendance_records/
+logs/
+*.log
+*.csv
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# OS / Editor Clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE / Editor Config
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Environment Variables
+.env
+.env.*
+*.env
+
+# Temporary / Cache Files
+tmp/
+temp/
+.cache/
+*.tmp
+*.bak
+*.orig
+
+# Coverage / Testing
+.coverage
+htmlcov/
+.pytest_cache/
