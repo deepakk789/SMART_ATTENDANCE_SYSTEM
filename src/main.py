@@ -1,13 +1,13 @@
 import os
 import tensorflow as tf
 
-# ---------------- PHASE 1 IMPORTS ----------------
+# Phase 1 Imports
 from dataset_creation.extract_frames import extract_frames
 from dataset_creation.detect_faces import detect_and_crop_faces
 from dataset_creation.align_faces import align_faces
 from dataset_creation.build_database import build_database
 
-# ---------------- PHASE 2 IMPORTS ----------------
+# Phase 2 Imports
 from attendance_system.detect_faces import detect_faces
 from attendance_system.generate_embeddings import get_embeddings
 from attendance_system.match_faces import load_database, match_faces
@@ -16,10 +16,10 @@ from attendance_system.draw_results import draw_results
 
 import cv2
 
-# ---------------- PATH RESOLUTION ----------------
+# Path Resolution
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# ---------------- CONFIG ----------------
+# Config
 RAW_VIDEO_DIR = os.path.join(BASE_DIR, "data", "raw_videos")
 FRAMES_DIR = os.path.join(BASE_DIR, "data", "extracted_frames")
 FACES_DIR = os.path.join(BASE_DIR, "data", "processed_faces")
@@ -30,7 +30,7 @@ GROUP_IMAGE_DIR = os.path.join(BASE_DIR, "data", "group_images")
 for directory in [RAW_VIDEO_DIR, FRAMES_DIR, FACES_DIR, EMBEDDINGS_DIR, GROUP_IMAGE_DIR]:
     os.makedirs(directory, exist_ok=True)
 
-# ---------------- PHASE 1 ----------------
+# Phase 1
 def create_dataset():
     print("\n[PHASE 1] Creating Dataset...\n")
 
@@ -57,7 +57,7 @@ def create_dataset():
     print("\n[INFO] Dataset Ready!\n")
 
 
-# ---------------- PHASE 2 ----------------
+# Phase 2
 def run_attendance(image_path):
     print("\n[PHASE 2] Running Attendance...\n")
 
@@ -73,7 +73,7 @@ def run_attendance(image_path):
     # Step 4: Match Faces
     names = match_faces(embeddings, database)
 
-    # Step 5 is removed here to prevent duplicate attendance marking
+    # Step 5 is removed here to prevent duplicate attendance marking.
     # Attendance is now only marked once at the end of all processing.
 
     # Step 6: Draw Results
@@ -88,7 +88,7 @@ def run_attendance(image_path):
     return names
 
 
-# ---------------- MAIN ----------------
+# Main
 if __name__ == "__main__":
     print("SMART ATTENDANCE SYSTEM")
 
