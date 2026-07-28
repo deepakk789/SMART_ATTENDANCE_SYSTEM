@@ -1,11 +1,13 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TF logging
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0' # Suppress oneDNN warning
 import tensorflow as tf
 
 # Phase 1 Imports
 from dataset_creation.extract_frames import extract_frames
 from dataset_creation.detect_faces import detect_and_crop_faces
 from dataset_creation.align_faces import align_faces
-from dataset_creation.build_database import build_database
+from dataset_creation.build_database import build_database, update_database
 
 # Phase 2 Imports
 from attendance_system.detect_faces import detect_faces
@@ -57,6 +59,38 @@ def create_dataset():
     print("\n[INFO] Dataset Ready!\n")
 
 
+def add_single_student():
+    student_name = input("Enter the student name to add: ").strip()
+    if not student_name:
+        print("[ERROR] Invalid student name!")
+        return
+
+    student_video_dir = os.path.join(RAW_VIDEO_DIR, student_name)
+    
+    if not os.path.exists(student_video_dir):
+        print(f"[ERROR] Directory for {student_name} not found in {RAW_VIDEO_DIR}!")
+        return
+
+    print(f"\n[INFO] Adding single student: {student_name}...\n")
+    
+    for video_file in os.listdir(student_video_dir):
+        video_path = os.path.join(student_video_dir, video_file)
+        
+        # Step 1: Extract Frames
+        frame_output = os.path.join(FRAMES_DIR, student_name)
+        extract_frames(video_path, frame_output)
+        
+        # Step 2: Detect Faces
+        face_output = os.path.join(FACES_DIR, student_name)
+        detect_and_crop_faces(frame_output, face_output)
+        
+        # Step 3: Align Faces
+        align_faces(face_output, face_output)
+
+    # Step 4: Update Database for single student
+    update_database(student_name, FACES_DIR, EMBEDDINGS_DIR)
+
+
 # Phase 2
 def run_attendance(image_path):
     print("\n[PHASE 2] Running Attendance...\n")
@@ -92,16 +126,20 @@ def run_attendance(image_path):
 if __name__ == "__main__":
     print("SMART ATTENDANCE SYSTEM")
 
-    print("\n1. Create Dataset")
-    print("2. Run Attendance")
+    print("\n1. Create complete database from zero")
+    print("2. Add new entry in db only")
+    print("3. Mark attendance for all photos")
+    print("4. Mark attendance for single photo")
 
-    choice = input("\nEnter choice (1/2): ")
+    choice = input("\nEnter choice (1/2/3/4): ").strip()
 
     if choice == "1":
         create_dataset()
 
     elif choice == "2":
-        # Pick first image from folder (you can modify later)
+        add_single_student()
+
+    elif choice == "3":
         images = os.listdir(GROUP_IMAGE_DIR)
 
         if len(images) == 0:
@@ -113,7 +151,7 @@ if __name__ == "__main__":
                 image_path = os.path.join(GROUP_IMAGE_DIR, img)
                 print(f"\n[INFO] Processing {img}...")
         
-                names = run_attendance(image_path)  # modify function to return names
+                names = run_attendance(image_path)
                 
                 for name in names:
                     if name != "Unknown" and name not in detected_students:
@@ -121,6 +159,42 @@ if __name__ == "__main__":
 
             from attendance_system.mark_attendance import mark_attendance
             mark_attendance(detected_students)
+
+    elif choice == "4":
+        images = os.listdir(GROUP_IMAGE_DIR)
+        
+        if len(images) == 0:
+            print("[ERROR] No group images found!")
+        else:
+            print("\nAvailable images:")
+            for idx, img in enumerate(images):
+                print(f"{idx + 1}. {img}")
+            
+            img_choice = input("\nEnter image number to process: ").strip()
+            
+            try:
+                img_idx = int(img_choice) - 1
+                if 0 <= img_idx < len(images):
+                    selected_img = images[img_idx]
+                    image_path = os.path.join(GROUP_IMAGE_DIR, selected_img)
+                    print(f"\n[INFO] Processing {selected_img}...")
+                    
+                    names = run_attendance(image_path)
+                    
+                    detected_students = {}
+                    for name in names:
+                        if name != "Unknown" and name not in detected_students:
+                            detected_students[name] = selected_img
+                            
+                    if detected_students:
+                        from attendance_system.mark_attendance import mark_attendance
+                        mark_attendance(detected_students)
+                    else:
+                        print("\n[INFO] No known students detected in this photo.")
+                else:
+                    print("[ERROR] Invalid image number!")
+            except ValueError:
+                print("[ERROR] Please enter a valid number!")
 
     else:
         print("Invalid choice!")
