@@ -86,3 +86,6 @@ temp/
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Interview & Study Materials
+Study Material/

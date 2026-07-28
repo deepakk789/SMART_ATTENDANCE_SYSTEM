@@ -104,7 +104,6 @@ SMART_ATTENDENCE_SYSTEM/
 |-- requirements.txt                   # Python dependencies
 |-- .gitignore
 |-- README.md
-|-- TECHNICAL_DOCUMENTATION.md
 ```
 
 > Directories that are **auto-generated at runtime** and therefore not in the repo:
@@ -147,37 +146,22 @@ All commands are run from inside the `src/` directory.
 cd src
 ```
 
-### Phase 1 — Build the Embedding Database
+### Using the Interactive Menu
 
-Prepare your raw videos:
-
-```
-data/raw_videos/
-    student_name_1/
-        video1.mp4
-    student_name_2/
-        video1.mp4
-```
-
-Then run:
+Run the main application:
 
 ```bash
 python main.py
-# Enter choice: 1
 ```
 
-This will populate `data/embeddings/embeddings.pkl` and `data/embeddings/labels.pkl`.
+You will be presented with a 4-option menu:
 
-### Phase 2 — Run Attendance on a Group Image
+1. **Create complete database from zero:** Parses all videos in `data/raw_videos/`, extracts frames, detects/aligns faces, and builds the initial `embeddings.pkl` and `labels.pkl`.
+2. **Add new entry in db only:** Prompts for a single student name, processes their new video in `data/raw_videos/`, and incrementally updates the database without recalculating existing students.
+3. **Mark attendance for all photos:** Scans `data/group_images/` and automatically processes and marks attendance for all classroom photos sequentially.
+4. **Mark attendance for single photo:** Lists all available classroom photos in `data/group_images/`. Enter the corresponding number to process and mark attendance for just that one image.
 
-Place one or more classroom photos in `data/group_images/`, then run:
-
-```bash
-python main.py
-# Enter choice: 2
-```
-
-The system processes every image in the folder, marks attendance for all recognised students, and saves the result to `attendance_records/`.
+*Attendance records are saved as CSV files with timestamps in `attendance_records/`, and annotated output images will momentarily pop up for review.*
 
 ---
 
@@ -220,14 +204,12 @@ The threshold of 0.6 was selected empirically. It can be adjusted in the matchin
 
 - Accuracy drops under low lighting, heavy occlusion, or extreme pose angles.
 - The system requires at least one clear, forward-facing video per student during enrolment.
-- Very large class sizes (50+ students in a single image) may increase inference time.
-- The `.pkl` database must be rebuilt if a new student is added.
 
 ---
 
 ## Future Work
 
-- Incremental database updates without full rebuild.
+- Use a Vector Database (e.g., FAISS, Pinecone) to eliminate brute-force search and improve scalability.
 - Real-time video stream support.
 - Integration with a college ERP system via REST API.
 - Fine-tuning FaceNet on a domain-specific student dataset to further improve accuracy.
