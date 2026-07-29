@@ -17,8 +17,11 @@ def detect_and_crop_faces(input_folder, output_folder):
 
         rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = detector.detect_faces(rgb_img)
+        # results is an object returned by detect faces which has bounding box[x,y,w,h]
+        # and the confidence score like (0.998) and the 5 facial landmarks eye(l,r) mouth(lend,rend),nose
 
         for i, result in enumerate(results):
+            # iterating over all detected faces
             x, y, w, h = result['box']
 
             # Fix negative values

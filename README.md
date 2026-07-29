@@ -30,7 +30,7 @@ Video Clips  ->  Frame Extraction (2 fps)  ->  Face Detection (MTCNN)
 3. MTCNN detects and crops each face from every frame.
 4. Cropped faces are aligned and resized to 160x160 pixels.
 5. FaceNet generates a 512-dimensional embedding vector per face.
-6. All embeddings are averaged and stored in a `.pkl` database keyed by student name.
+6. All embeddings are collected and stored in a `.pkl` database keyed by student name to preserve intra-class variance (differing angles/lighting).
 
 ### Phase 2: Recognition
 
